@@ -45,7 +45,6 @@ class RoutePlannerTest : public ::testing::Test {
     std::vector<std::byte> osm_data = ReadOSMData(osm_data_file);
     RouteModel model{osm_data};
     RoutePlanner route_planner{model, 10, 10, 90, 90};
-    
     // Construct start_node and end_node as in the model.
     float start_x = 0.1;
     float start_y = 0.1;
