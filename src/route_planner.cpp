@@ -33,21 +33,21 @@ float RoutePlanner::CalculateHValue(RouteModel::Node const *node) {
 // - For each node in current_node.neighbors, add the neighbor to open_list and set the node's visited attribute to true.
 
 void RoutePlanner::AddNeighbors(RouteModel::Node *current_node) {
+
+    //std::cout<<"AddNeighbors() - BEGIN::Adding Neighbors for node: "<<"\n";
     current_node->FindNeighbors();
     auto neighbors = current_node->neighbors;
     for (auto &neighbor : neighbors )
     {
-        auto h_value = CalculateHValue(neighbor);
-        auto g_value = 0;
+        auto h_value = CalculateHValue(neighbor);       
         auto parent_node = current_node;
         neighbor->h_value = h_value;
-        neighbor->g_value = current_node->g_value + 1;
+        neighbor->g_value = current_node->g_value + current_node->distance(*neighbor);
         neighbor->parent = parent_node;
         neighbor->visited = true;
-        open_list.push_back(neighbor);
+        open_list.push_back(neighbor);  
     }
-    
-}
+}   
 
 
 // DONE 5: Complete the NextNode method to sort the open list and return the next node.
@@ -59,16 +59,18 @@ void RoutePlanner::AddNeighbors(RouteModel::Node *current_node) {
 
 RouteModel::Node *RoutePlanner::NextNode() {
 
-    std::sort(open_list.begin(),open_list.end(),[](RouteModel::Node * a ,RouteModel::Node * b ) {
-        return (a->h_value + a->g_value) < (b->h_value+b->g_value); 
+    // sort the open list according to the sum of the h value and g value
+    std::sort(open_list.begin(),open_list.end(),[](const RouteModel::Node * a ,const RouteModel::Node * b ) {
+        return (a->g_value+a->h_value) < (b->g_value+b->h_value); 
     });
 
     RouteModel::Node *aux = *open_list.begin();
-
     open_list.erase(open_list.begin());
 
     return aux;
 }
+
+
 
 
 // DONE 6: Complete the ConstructFinalPath method to return the final path found from your A* search.
@@ -110,11 +112,10 @@ std::vector<RouteModel::Node> RoutePlanner::ConstructFinalPath(RouteModel::Node 
 
 void RoutePlanner::AStarSearch() {
     RouteModel::Node *current_node = start_node;
-
-
-
-    // DONE: Implement your solution here.
-    AddNeighbors(current_node);
+    current_node->visited = true;
+    current_node->g_value = 0.0;
+    current_node->h_value = CalculateHValue(current_node);
+    open_list.push_back(current_node);
     while(!open_list.empty()){
         AddNeighbors(NextNode());
     }
