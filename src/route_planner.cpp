@@ -33,8 +33,6 @@ float RoutePlanner::CalculateHValue(RouteModel::Node const *node) {
 // - For each node in current_node.neighbors, add the neighbor to open_list and set the node's visited attribute to true.
 
 void RoutePlanner::AddNeighbors(RouteModel::Node *current_node) {
-
-    //std::cout<<"AddNeighbors() - BEGIN::Adding Neighbors for node: "<<"\n";
     current_node->FindNeighbors();
     auto neighbors = current_node->neighbors;
     for (auto &neighbor : neighbors )
@@ -65,12 +63,11 @@ RouteModel::Node *RoutePlanner::NextNode() {
     });
 
     RouteModel::Node *aux = *open_list.begin();
+
     open_list.erase(open_list.begin());
 
     return aux;
 }
-
-
 
 
 // DONE 6: Complete the ConstructFinalPath method to return the final path found from your A* search.
@@ -116,6 +113,7 @@ void RoutePlanner::AStarSearch() {
     current_node->g_value = 0.0;
     current_node->h_value = CalculateHValue(current_node);
     open_list.push_back(current_node);
+
     while(!open_list.empty()){
         AddNeighbors(NextNode());
     }
